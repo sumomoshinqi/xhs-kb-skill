@@ -1,14 +1,12 @@
 # xhs-kb
 
-`xhs-kb` 是一个 Codex skill，用来检索并使用本地小红书/XHS 运营知识库。
+`xhs-kb` 是一个 Codex skill，用来检索并使用本地小红书运营知识库。
 
 这个仓库已经包含：
 
 - Codex skill：`xhs-kb/`
 - 完整知识库数据：`xhs_codex_kb/`
 - 可直接运行的检索 CLI：`xhs-kb/scripts/xhs_kb.py`
-
-clone 后可以直接配置到 Codex 使用，不需要再单独导入飞书资料。
 
 ## 适用场景
 
@@ -161,12 +159,3 @@ python3 xhs-kb/scripts/xhs_kb.py stats
 python3 xhs-kb/scripts/xhs_kb.py search "标题公式 痛点 解决方案" -n 3
 python3 xhs-kb/scripts/xhs_kb.py context "商家 开店 薯条 聚光 蒲公英" -n 3
 ```
-
-## 数据来源与边界
-
-- 知识库来自飞书 Wiki 的本地导出与索引。
-- 仓库内已经包含原始附件、抽取后的 Markdown、索引、目录和校验记录。
-- 原始附件和 `chunks.jsonl` 使用 Git LFS 管理，clone 后需要确保 LFS 文件已拉取。
-- PDF 抽取依赖文本层；扫描图像页可能没有可检索正文。
-- 4 个附件只保留元数据或无正文可抽取，原件仍保留在 `xhs_codex_kb/files/originals/`。
-- 不要声称已读取没有抽出正文的附件全文。
