@@ -41,7 +41,7 @@ Search chunks and return ranked snippets.
 ```bash
 python3 scripts/xhs_kb.py search "小红书 标题公式 痛点 解决方案" -n 5
 python3 scripts/xhs_kb.py search "薯条 聚光 蒲公英 达人合作" --category "2、营销种草师课件"
-python3 scripts/xhs_kb.py search "郑州帮 新品起盘" --json
+python3 scripts/xhs_kb.py search "28天 SOP 新品起盘" --json
 ```
 
 ### context

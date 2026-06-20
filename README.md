@@ -1,86 +1,106 @@
 # xhs-kb
 
-Codex skill for searching and using a local Xiaohongshu/XHS operations knowledge base.
+`xhs-kb` 是一个 Codex skill，用来检索并使用本地小红书/XHS 运营知识库。
 
-This repository contains the **skill code and deployment instructions only**. It does not include the underlying 1GB knowledge base export, Feishu originals, extracted documents, or indexed chunks.
+这个仓库已经包含：
 
-## What This Skill Does
+- Codex skill：`xhs-kb/`
+- 完整知识库数据：`xhs_codex_kb/`
+- 可直接运行的检索 CLI：`xhs-kb/scripts/xhs_kb.py`
 
-`xhs-kb` helps Codex retrieve evidence from a local 小红书 knowledge base before drafting, rewriting, diagnosing, or planning.
+clone 后可以直接配置到 Codex 使用，不需要再单独导入飞书资料。
 
-It is designed for tasks such as:
+## 适用场景
+
+这个 skill 适合处理这些需求：
 
 - 小红书种草笔记生成：标题、封面文案、正文、标签、评论区引导
-- 笔记诊断与改写：点击低、转化弱、标题/封面/正文结构问题
-- 账号运营 SOP：起号、选题、素材库、发布时间、互动涨粉
+- 小红书笔记诊断与改写：点击低、转化弱、标题/封面/正文结构问题
+- 小红书账号运营 SOP：起号、选题、素材库、发布时间、互动涨粉
 - 商家增长：开店、商品种草、达人合作、直播、私域承接
 - 投放与合作：薯条、聚光、蒲公英、达人合作场景判断
-- 本地/郑州运营 SOP：28 天流程、新品起盘、每日工作流
+- 区域运营 SOP：28 天流程、新品起盘、每日工作流
 
-## Repository Layout
+## 仓库结构
 
 ```text
 .
 ├── README.md
-└── xhs-kb/
-    ├── SKILL.md
-    ├── agents/
-    │   └── openai.yaml
-    ├── references/
-    │   └── interface.md
-    └── scripts/
-        └── xhs_kb.py
+├── xhs-kb/
+│   ├── SKILL.md
+│   ├── agents/
+│   │   └── openai.yaml
+│   ├── references/
+│   │   └── interface.md
+│   └── scripts/
+│       └── xhs_kb.py
+└── xhs_codex_kb/
+    ├── README.md
+    ├── KNOWLEDGE_MAP.md
+    ├── VALIDATION.md
+    ├── documents/
+    ├── extracted/
+    ├── files/
+    │   └── originals/
+    ├── index/
+    │   ├── catalog.json
+    │   ├── chunks.jsonl
+    │   ├── TREE.md
+    │   └── search_kb.py
+    └── raw/
 ```
 
-## Data Requirement
+## 知识库规模
 
-The skill expects an external knowledge base directory with this shape:
+当前内置知识库包含：
 
-```text
-xhs_codex_kb/
-├── index/
-│   ├── catalog.json
-│   └── chunks.jsonl
-├── documents/
-├── extracted/
-└── files/
-```
+- source：902 个
+- 在线文档：34 份
+- 附件：868 份，原件保留在 `xhs_codex_kb/files/originals/`
+- 可全文检索 source：898 个
+- 检索 chunks：10121 条
+- 4 个附件只保留元数据或无正文可抽取
 
-The current source bundle contains:
-
-- 902 total sources
-- 898 searchable text sources
-- 10121 chunks
-- 4 metadata-only items where text could not be extracted
-
-## Install
-
-Clone the repo and copy the skill folder into Codex's skill directory:
+## 快速开始
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/sumomoshinqi/xhs-kb-skill.git
 cd xhs-kb-skill
+git lfs install
+git lfs pull
+
+python3 xhs-kb/scripts/xhs_kb.py stats
+python3 xhs-kb/scripts/xhs_kb.py search "小红书 标题公式 痛点 解决方案" -n 5
+```
+
+脚本会自动优先读取仓库内的 `./xhs_codex_kb`，所以在 repo 根目录运行时不需要设置环境变量。
+
+仓库使用 Git LFS 保存原始附件和大索引文件。正常 `git clone` 会自动拉取 LFS 文件；如果本地只拿到了 pointer 文件，执行 `git lfs pull`。
+
+## 安装到 Codex
+
+把 skill 目录复制到 Codex skills 目录：
+
+```bash
 mkdir -p "${CODEX_HOME:-$HOME/.codex}/skills"
 cp -R xhs-kb "${CODEX_HOME:-$HOME/.codex}/skills/"
 ```
 
-Then point the skill to the local knowledge base:
+如果你希望 Codex 在任意目录都能找到这份知识库，设置 `XHS_KB_ROOT`：
 
 ```bash
-export XHS_KB_ROOT="/path/to/xhs_codex_kb"
+export XHS_KB_ROOT="$(pwd)/xhs_codex_kb"
 ```
 
-On the original machine, the default path is:
+也可以把这行写入 shell 配置文件，例如 `~/.zshrc`：
 
 ```bash
-~/Documents/Codex/2026-06-18/sous/outputs/xhs_codex_kb
+echo "export XHS_KB_ROOT=\"$(pwd)/xhs_codex_kb\"" >> ~/.zshrc
 ```
 
-If the data lives there, `XHS_KB_ROOT` is optional.
+## 在 Codex 中调用
 
-## Use In Codex
-
-Invoke the skill naturally:
+自然语言示例：
 
 ```text
 用 $xhs-kb 给油皮精华写一篇小红书种草笔记，带标题、封面文案、正文和标签。
@@ -89,64 +109,64 @@ Invoke the skill naturally:
 用 $xhs-kb 查薯条、聚光、蒲公英分别适合什么投放场景，并列证据。
 ```
 
-For strategic or audit-style answers, ask Codex to include local evidence paths.
+做策略、诊断、报告类输出时，建议要求 Codex 列出本地证据路径。
 
-## CLI Interface
+## CLI 接口
 
-The bundled CLI can also be used directly.
-
-### Stats
+### 1. 查看统计
 
 ```bash
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py stats
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py stats --json
+python3 xhs-kb/scripts/xhs_kb.py stats
+python3 xhs-kb/scripts/xhs_kb.py stats --json
 ```
 
-### Search
+### 2. 检索知识库
 
 ```bash
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py search "小红书 标题公式 痛点 解决方案" -n 5
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py search "薯条 聚光 蒲公英 达人合作" --category "2、营销种草师课件"
+python3 xhs-kb/scripts/xhs_kb.py search "小红书 标题公式 痛点 解决方案" -n 5
+python3 xhs-kb/scripts/xhs_kb.py search "薯条 聚光 蒲公英 达人合作" --category "2、营销种草师课件"
 ```
 
-### Evidence Pack
+### 3. 生成证据包
 
 ```bash
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py context "油皮精华 种草笔记 标题 封面" -n 6 --chars 420
+python3 xhs-kb/scripts/xhs_kb.py context "油皮精华 种草笔记 标题 封面" -n 6 --chars 420
 ```
 
-### Source Inspection
+### 4. 打开原始文本
 
 ```bash
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py source "documents/001-小红爆款笔记写作指南及商家经营手册.md" --head 3000
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py source "小红爆款笔记写作指南及商家经营手册" --head 2000
+python3 xhs-kb/scripts/xhs_kb.py source "documents/001-小红爆款笔记写作指南及商家经营手册.md" --head 3000
+python3 xhs-kb/scripts/xhs_kb.py source "小红爆款笔记写作指南及商家经营手册" --head 2000
 ```
 
-Any command can override the data root:
+### 5. 指定其他知识库路径
 
 ```bash
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py --kb /path/to/xhs_codex_kb stats
+python3 xhs-kb/scripts/xhs_kb.py --kb /path/to/xhs_codex_kb stats
 ```
 
-## Validate
+## 验证
 
-Validate the skill folder with Codex's skill validator:
+验证 skill 结构：
 
 ```bash
-python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py ~/.codex/skills/xhs-kb
+python3 ~/.codex/skills/.system/skill-creator/scripts/quick_validate.py xhs-kb
 ```
 
-Smoke-test the data connection:
+验证知识库可读：
 
 ```bash
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py stats
-python3 ~/.codex/skills/xhs-kb/scripts/xhs_kb.py search "标题公式 痛点 解决方案" -n 3
+python3 xhs-kb/scripts/xhs_kb.py stats
+python3 xhs-kb/scripts/xhs_kb.py search "标题公式 痛点 解决方案" -n 3
+python3 xhs-kb/scripts/xhs_kb.py context "商家 开店 薯条 聚光 蒲公英" -n 3
 ```
 
-## Deployment Notes
+## 数据来源与边界
 
-- Keep the knowledge base data outside Git unless you intentionally prepare a separate, access-controlled data artifact.
-- Use `XHS_KB_ROOT` for different machines or refreshed exports.
-- The skill cites local `kb_path` values such as `documents/...` and `extracted/...`; these paths are relative to the configured knowledge base root.
-- The skill must not claim to read metadata-only attachments as full text.
-
+- 知识库来自飞书 Wiki 的本地导出与索引。
+- 仓库内已经包含原始附件、抽取后的 Markdown、索引、目录和校验记录。
+- 原始附件和 `chunks.jsonl` 使用 Git LFS 管理，clone 后需要确保 LFS 文件已拉取。
+- PDF 抽取依赖文本层；扫描图像页可能没有可检索正文。
+- 4 个附件只保留元数据或无正文可抽取，原件仍保留在 `xhs_codex_kb/files/originals/`。
+- 不要声称已读取没有抽出正文的附件全文。

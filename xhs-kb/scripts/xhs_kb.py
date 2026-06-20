@@ -20,12 +20,30 @@ def tokenize(text):
 
 
 def resolve_kb_root(args):
-    root = Path(args.kb or os.environ.get("XHS_KB_ROOT") or DEFAULT_KB_ROOT).expanduser().resolve()
-    required = [root / "index" / "catalog.json", root / "index" / "chunks.jsonl"]
-    missing = [str(path) for path in required if not path.exists()]
-    if missing:
-        raise SystemExit("Missing XHS KB files:\n" + "\n".join(missing))
-    return root
+    explicit = args.kb or os.environ.get("XHS_KB_ROOT")
+    if explicit:
+        candidates = [Path(explicit).expanduser()]
+    else:
+        script_path = Path(__file__).resolve()
+        candidates = [
+            script_path.parents[2] / "xhs_codex_kb",
+            Path.cwd() / "xhs_codex_kb",
+            DEFAULT_KB_ROOT,
+        ]
+
+    checked = []
+    for candidate in candidates:
+        root = candidate.expanduser().resolve()
+        checked.append(root)
+        required = [root / "index" / "catalog.json", root / "index" / "chunks.jsonl"]
+        if all(path.exists() for path in required):
+            return root
+
+    message = ["Missing XHS KB files. Checked:"]
+    for root in checked:
+        message.append(f"- {root}")
+    message.append("Set XHS_KB_ROOT or pass --kb /path/to/xhs_codex_kb.")
+    raise SystemExit("\n".join(message))
 
 
 def load_catalog(root):

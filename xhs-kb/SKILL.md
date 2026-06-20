@@ -1,6 +1,6 @@
 ---
 name: xhs-kb
-description: Search and use the local Xiaohongshu/XHS knowledge base built from the Feishu Wiki on 小红书爆款笔记、商家增长、运营 SOP、标题封面正文、薯条/聚光/蒲公英、开店与投放资料. Use when the user asks for 小红书/XHS content drafting, note rewriting, account or post diagnosis, merchant operation plans, local/郑州 SOP, or evidence-backed answers from this local knowledge base.
+description: Search and use the local Xiaohongshu/XHS knowledge base built from the Feishu Wiki on 小红书爆款笔记、商家增长、运营 SOP、标题封面正文、薯条/聚光/蒲公英、开店与投放资料. Use when the user asks for 小红书/XHS content drafting, note rewriting, account or post diagnosis, merchant operation plans, local or regional SOP, or evidence-backed answers from this local knowledge base.
 ---
 
 # XHS Knowledge Base
@@ -13,7 +13,9 @@ Resolve the knowledge base root in this order:
 
 1. User-provided `--kb <path>`
 2. `XHS_KB_ROOT`
-3. Default local root: `~/Documents/Codex/2026-06-18/sous/outputs/xhs_codex_kb`
+3. Bundled repository root: `<repo>/xhs_codex_kb`
+4. Current working directory: `./xhs_codex_kb`
+5. Default local root: `~/Documents/Codex/2026-06-18/sous/outputs/xhs_codex_kb`
 
 The root must contain `index/catalog.json`, `index/chunks.jsonl`, `documents/`, and `extracted/`.
 
@@ -47,7 +49,7 @@ For complete arguments and install notes, read `references/interface.md`.
 - Titles/covers/body: search `标题公式 痛点 解决方案 封面 正文 互动`.
 - Merchant/opening: search `商家 开店 日常运营 商品 种草`.
 - Ads/collaboration: search `薯条 聚光 蒲公英 达人 合作`.
-- Local SOP: search `郑州帮 28天 SOP 新品起盘`.
+- Regional SOP: search `28天 SOP 新品起盘`.
 - Copy examples: search `爆款文案 标题 情绪 钩子`.
 
 ## Quality Boundary

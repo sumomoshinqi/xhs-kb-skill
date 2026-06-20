@@ -1,0 +1,2 @@
+xhs_codex_kb/files/originals/** filter=lfs diff=lfs merge=lfs -text
+xhs_codex_kb/index/chunks.jsonl filter=lfs diff=lfs merge=lfs -text
