@@ -1,0 +1,6 @@
+interface:
+  display_name: "小红书知识库"
+  short_description: "检索本地小红书运营资料并辅助产出"
+  default_prompt: "Use $xhs-kb to search the local Xiaohongshu knowledge base and draft a platform-ready note."
+policy:
+  allow_implicit_invocation: true

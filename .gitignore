@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.DS_Store
+
+# Keep exported knowledge base data out of this repository.
+xhs_codex_kb/
+outputs/
+files/
+documents/
+extracted/
+index/
+*.tar
+*.tar.gz
+*.zip
